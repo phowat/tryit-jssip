@@ -15,6 +15,7 @@
     "domready": "^1.0.8",
     "jssip": "^3.3.11",
     "material-ui": "^0.20.2",
+    "mysql": "^2.18.1",
     "prop-types": "^15.7.2",
     "random-string": "^0.2.0",
     "react": "^16.8.6",

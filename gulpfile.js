@@ -41,6 +41,7 @@ const stylus = require('gulp-stylus');
 const autoprefixer = require('autoprefixer-stylus');
 const cssBase64 = require('gulp-css-base64');
 const browserSync = require('browser-sync');
+const mysql = require('mysql');
 
 const PKG = require('./package.json');
 const BANNER = fs.readFileSync('banner.txt').toString();
@@ -54,10 +55,32 @@ const OUTPUT_DIR = 'out';
 // Default environment
 process.env.NODE_ENV = 'development';
 
+const connection = mysql.createConnection({
+	host         : process.env.MYSQL_HOST,
+	user         : process.env.MYSQL_USER,
+	password     : process.env.MYSQL_ROOT_PASSWORD,
+	database     : process.env.MYSQL_DATABASE_instantvoice,
+	insecureAuth : true
+});
+
 function logError(error)
 {
 	gutil.log(gutil.colors.red(String(error)));
 }
+
+connection.query('SELECT var_val FROM config WHERE filename="turn.conf" AND var_name="ports"',
+	function(err, rows)
+	{
+		if (err)
+		{
+			logError(`MYSQL err: ${err.toString()}`);
+
+			return;
+		}
+		process.env.TURN_PORTS = rows[0].var_val;
+	});
+
+connection.end();
 
 function bundle(options)
 {
@@ -82,8 +105,11 @@ function bundle(options)
 		.transform('babelify')
 		.transform(envify(
 			{
-				NODE_ENV : process.env.NODE_ENV,
-				_        : 'purge'
+				NODE_ENV    : process.env.NODE_ENV,
+				TURN_PORTS  : process.env.TURN_PORTS,
+				ACCOUNT_SID : process.env.ACCOUNT_SID,
+				AUTH_TOKEN  : process.env.AUTH_TOKEN,
+				_           : 'purge'
 			}));
 
 	if (watch)
