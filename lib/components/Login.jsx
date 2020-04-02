@@ -46,22 +46,32 @@ export default class Login extends React.Component
 
 					<form action='' onSubmit={this.handleSubmit.bind(this)}>
 						<div className='settings-icon-container'>
-							<SettingsIcon
-								className='icon'
-								color='#666'
-								hoverColor='#333'
-								onClick={this.handleClickSettings.bind(this)}
-							/>
+							{/*<SettingsIcon*/}
+							{/*	className='icon'*/}
+							{/*	color='#666'*/}
+							{/*	hoverColor='#333'*/}
+							{/*	onClick={this.handleClickSettings.bind(this)}*/}
+							{/*/>*/}
 						</div>
 
 						<div className='form-container'>
 							<TextField
-								floatingLabelText='Your Name'
+								floatingLabelText='Username'
 								value={settings.display_name || ''}
 								errorText={state.errors.name}
 								fullWidth
 								onChange={this.handleChangeName.bind(this)}
 							/>
+
+								<TextField
+									floatingLabelText='Password'
+									value={settings.password || ''}
+									floatingLabelFixed
+									fullWidth
+									type='password'
+									onChange={this.handleChangePassword.bind(this)}
+								/>
+
 							<FlatButton
 								label='Reset'
 								primary
@@ -102,10 +112,20 @@ export default class Login extends React.Component
 		const name = event.target.value;
 
 		settings['display_name'] = name;
+		settings.uri = name + "@InstantVoice";
 		errors.name = null;
 
 		this.setState({ settings, errors });
 	}
+
+	handleChangePassword(event)
+	{
+		const settings = this.state.settings;
+
+		settings.password = event.target.value;
+		this.setState({ settings });
+	}
+
 
 	handleClickReset()
 	{
